@@ -230,9 +230,9 @@ class OAuth2Session(requests.Session):
                               `auth` tuple. If the value is `None`, it will be
                               omitted from the request, however if the value is
                               an empty string, an empty string will be sent.
-        :param cert: Client certificate to send for OAuth 2.0 Mutual-TLS Client 
-                     Authentication (draft-ietf-oauth-mtls). Can either be the 
-                     path of a file containing the private key and certificate or 
+        :param cert: Client certificate to send for OAuth 2.0 Mutual-TLS Client
+                     Authentication (draft-ietf-oauth-mtls). Can either be the
+                     path of a file containing the private key and certificate or
                      a tuple of two filenames for certificate and key.
         :param kwargs: Extra parameters to include in the token request.
         :return: A token dict
@@ -350,11 +350,6 @@ class OAuth2Session(requests.Session):
             **request_kwargs
         )
 
-        log.debug("Request to fetch token completed with status %s.", r.status_code)
-        log.debug("Request url was %s", r.request.url)
-        log.debug("Request headers were %s", r.request.headers)
-        log.debug("Request body was %s", r.request.body)
-        log.debug("Response headers were %s and content %s.", r.headers, r.text)
         log.debug(
             "Invoking %d token response hooks.",
             len(self.compliance_hook["access_token_response"]),
@@ -363,6 +358,11 @@ class OAuth2Session(requests.Session):
             log.debug("Invoking hook %s.", hook)
             r = hook(r)
 
+        log.debug("Request to fetch token completed with status %s.", r.status_code)
+        log.debug("Request url was %s", r.request.url)
+        log.debug("Request headers were %s", r.request.headers)
+        log.debug("Request body was %s", r.request.body)
+        log.debug("Response headers were %s and content %s.", r.headers, r.text)
         self._client.parse_request_body_response(r.text, scope=self.scope)
         self.token = self._client.token
         log.debug("Obtained token %s.", self.token)
@@ -439,12 +439,12 @@ class OAuth2Session(requests.Session):
             withhold_token=True,
             proxies=proxies,
         )
-        log.debug("Request to refresh token completed with status %s.", r.status_code)
-        log.debug("Response headers were %s and content %s.", r.headers, r.text)
         log.debug(
             "Invoking %d token response hooks.",
             len(self.compliance_hook["refresh_token_response"]),
         )
+        log.debug("Request to refresh token completed with status %s.", r.status_code)
+        log.debug("Response headers were %s and content %s.", r.headers, r.text)
         for hook in self.compliance_hook["refresh_token_response"]:
             log.debug("Invoking hook %s.", hook)
             r = hook(r)
